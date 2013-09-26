@@ -34,8 +34,12 @@ import random
 import hashlib
 import tempfile
 import argparse
+import subprocess
 
 from os import path
+
+from os.path import *
+
 from uuid import uuid1, uuid3, uuid4, uuid5
 from datetime import date, time
 now = datetime.datetime.now
@@ -44,6 +48,13 @@ from random import randint, randrange, choice
 from collections import Counter, OrderedDict
 from math import *
 
+def DN(x): return dirname(x)
+def BN(x, ext=""): return basename(x).replace(ext, "")
+def SP(x, sep=None): return x.split(sep)
+def FQP(x): return abspath(expandvars(expanduser(x)))
+def SUB(x, old, new): return x.replace(old, new)
+def SUR(x, left, right): return str(left) + str(x) + str(right)
+def INV(x, cmd): subprocess.call(cmd, shell=True) ; return x
 
 # we need a function to make a setup.py entry point
 def main():
@@ -95,7 +106,7 @@ def main():
 
             # we decode all the stdin content and add it to the
             # exec context
-            context['x'] = (l.decode(in_encoding) for l in sys.stdin)
+            context['x'] = ( l.rstrip().decode(in_encoding) for l in sys.stdin )
 
             if args.b:
                 exec args.b in context
@@ -119,12 +130,16 @@ def main():
             if args.b:
                 exec args.b in context
 
-            for i, x in enumerate(sys.stdin):
+            for i, x in enumerate( ln.rstrip() for ln in sys.stdin ):
                 context['x'] = x.decode(in_encoding)
                 context['i'] = i
+
                 exec "res = (%s)" % command in context
-                if res is not None:
-                    sys.stdout.write(unicode(res).encode(out_encoding))
+
+                if res == None:
+                    continue
+
+                sys.stdout.write(unicode(res).encode(out_encoding) + os.linesep)
 
     # 80 % of user errors come from them inserting prints
     except SyntaxError:
