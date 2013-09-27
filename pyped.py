@@ -51,10 +51,13 @@ from math import *
 def DN(x): return dirname(x)
 def BN(x, ext=""): return basename(x).replace(ext, "")
 def SP(x, sep=None): return x.split(sep)
+
+def ENV(v): return os.environ[v]
 def FQP(x): return abspath(expandvars(expanduser(x)))
 def SUB(x, old, new): return x.replace(old, new)
 def SUR(x, left, right): return str(left) + str(x) + str(right)
 def INV(x, cmd): subprocess.call(cmd, shell=True) ; return x
+def ECHO(x): sys.stderr.write(x + os.linesep) ; return x
 
 # we need a function to make a setup.py entry point
 def main():
@@ -139,7 +142,7 @@ def main():
                 if res == None:
                     continue
 
-                sys.stdout.write(unicode(res).encode(out_encoding) + os.linesep)
+                sys.stdout.write(unicode(res).encode(out_encoding).rstrip() + os.linesep)
 
     # 80 % of user errors come from them inserting prints
     except SyntaxError:
