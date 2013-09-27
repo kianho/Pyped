@@ -29,7 +29,7 @@ How to install ?
 
 Just type::
 
-    pip install pyped
+    pip install -e .
 
 Please note this is beta code, it will void your waranty, you may take weight,
 loose your job and your wife and endorse unspeakable believes.
