@@ -35,6 +35,7 @@ import hashlib
 import tempfile
 import argparse
 import subprocess
+import commands
 
 from os import path
 
@@ -58,6 +59,14 @@ def SUB(x, old, new): return x.replace(old, new)
 def SUR(x, left, right): return str(left) + str(x) + str(right)
 def INV(x, cmd): subprocess.call(cmd, shell=True) ; return x
 def ECHO(x): sys.stderr.write(x + os.linesep) ; return x
+
+def WC(p) : 
+    if FQP(p).endswith(".gz"):
+        cmd = "zcat {} | wc -l".format(p)
+    else:
+        cmd = "wc -l {}".format(p)
+
+    return commands.getoutput(cmd).strip().split()[0]
 
 # we need a function to make a setup.py entry point
 def main():
