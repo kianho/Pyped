@@ -38,7 +38,6 @@ import subprocess
 import commands
 
 from os import path
-
 from os.path import *
 
 from uuid import uuid1, uuid3, uuid4, uuid5
@@ -48,6 +47,10 @@ today = datetime.datetime.today
 from random import randint, randrange, choice
 from collections import Counter, OrderedDict
 from math import *
+
+TAB = "\t"
+TS = TAB
+_ = " "
 
 def DN(x): return dirname(x)
 def BN(x, ext=""): return basename(x).replace(ext, "")
@@ -143,15 +146,29 @@ def main():
                 exec args.b in context
 
             for i, x in enumerate( ln.rstrip() for ln in sys.stdin ):
-                context['x'] = x.decode(in_encoding)
-                context['i'] = i
+                try:
+                    context['x'] = x
+                    context['i'] = str(i)
 
-                exec "res = (%s)" % command in context
+                    # split on ALL white-space
+                    context['w'] = SP(x)
 
-                if res == None:
-                    continue
+                    # split on TAB spaces only
+                    context['t'] = SP(x, '\t')
 
-                sys.stdout.write(unicode(res).encode(out_encoding).rstrip() + os.linesep)
+                    exec "res = (%s)" % command in context
+
+                    if res == None:
+                        continue
+
+                    sys.stdout.write(unicode(res).encode(out_encoding).rstrip() + os.linesep)
+                except Exception, e : 
+                    sys.stderr.write(os.linesep + "========= Pyped Error =========" + os.linesep)
+                    sys.stderr.write(os.linesep + "@ LINE ---> '" +
+                            x[:50] + "...'" + os.linesep * 2)
+                    sys.stderr.write("====== See Details Below ======"
+                            + os.linesep * 2)
+                    raise e
 
     # 80 % of user errors come from them inserting prints
     except SyntaxError:
