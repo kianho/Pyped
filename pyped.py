@@ -71,6 +71,8 @@ def WC(p) :
 
     return commands.getoutput(cmd).strip().split()[0]
 
+LC = WC
+
 # we need a function to make a setup.py entry point
 def main():
 
