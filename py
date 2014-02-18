@@ -47,6 +47,7 @@ today = datetime.datetime.today
 from random import randint, randrange, choice
 from collections import Counter, OrderedDict
 from math import *
+from commands import getoutput
 
 TAB = "\t"
 TS = TAB
@@ -62,6 +63,8 @@ def SUB(x, old, new): return x.replace(old, new)
 def SUR(x, left, right): return str(left) + str(x) + str(right)
 def INV(x, cmd): subprocess.call(cmd, shell=True) ; return x
 def ECHO(x): sys.stderr.write(x + os.linesep) ; return x
+def IFEXISTS(x): return ( x if exists(x) else None )
+def IFNOTEXISTS(x): return ( x if not exists(x) else None )
 
 def WC(p) : 
     if FQP(p).endswith(".gz"):
@@ -70,6 +73,19 @@ def WC(p) :
         cmd = "wc -l {}".format(p)
 
     return commands.getoutput(cmd).strip().split()[0]
+
+def ISFLOAT(x):
+    try:
+        float(x)
+    except:
+        return False
+    return True
+
+
+def FLOATSTR(x, fmt="%.2f"):
+    if ISFLOAT(x):
+        return fmt % (float(x))
+    return x
 
 LC = WC
 
@@ -157,6 +173,9 @@ def main():
 
                     # split on TAB spaces only
                     context['t'] = SP(x, '\t')
+
+                    # split on COMMAS only
+                    context['c'] = SP(x, ',')
 
                     exec "res = (%s)" % command in context
 
